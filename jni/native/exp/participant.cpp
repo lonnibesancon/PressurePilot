@@ -26,7 +26,7 @@ Participant::Participant(int p, std::string path){
 	generateAllTargets();
 	pID = p ;
 	filepath = path ;
-	conditions = {1,2,3,4} ;
+	conditions = {1,2} ;
 	getPermutationCondition();
 	currentConditionID = 0 ;
 	currentTargetID = 0 ;
@@ -36,7 +36,7 @@ Participant::Participant(int p, std::string path){
 
 Participant::Participant(){
 	generateAllTargets();
-	conditions = {1,2,3,4} ;
+	conditions = {1,2} ;
 	currentConditionID = 0 ;
 	currentTargetID = 0 ;
 	logWritten = false ;
@@ -113,16 +113,10 @@ void Participant::performLog(){
     	std::string cond = "";
     	switch(conditions[currentConditionID]){
     		case 1:
-    			cond = "rate_control";
-    			break ;
-    		case 2:
-    			cond = "speed_control";
-    			break ;
-    		case 3:
     			cond = "pressure_control";
     			break ;
-    		case 4:
-    			cond = "slider_control";
+    		case 2:
+    			cond = "pressure_control_reverse";
     			break ;
     	}
     	

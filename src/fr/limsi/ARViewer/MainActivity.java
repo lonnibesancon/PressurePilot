@@ -241,13 +241,10 @@ public class MainActivity extends BaseARActivity
     private Handler mHandler ;
 
 
-    final private static short NO_CONTROL               = 0 ;
-    final private static short RATE_CONTROL             = 1 ;
-    final private static short RATE_CONTROL_SIMPLE      = 11 ;
-    final private static short SPEED_CONTROL            = 2 ;
-    final private static short PRESSURE_CONTROL         = 3 ;
-    final private static short PRESSURE_CONTROL_REVERSE = 31 ;
-    final private static short SLIDER_CONTROL           = 4 ;
+    
+    final private static short PRESSURE_CONTROL         = 1 ;
+    final private static short PRESSURE_CONTROL_REVERSE = 2 ;
+    
 
 
     //Training part
@@ -329,7 +326,7 @@ public class MainActivity extends BaseARActivity
     public void showAlerts(){
         //When it's done
 
-        if( trialNumber == 4*NBTRIALS ){
+        if( trialNumber == 2*NBTRIALS ){
             AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
             alert.setTitle("Thanks for your participation");
             alert.setMessage("Thanks a lot for participating in the study!!!!");
@@ -343,6 +340,7 @@ public class MainActivity extends BaseARActivity
             });
             AlertDialog alertdialog = alert.create();
             alertdialog.show();
+            return ;
         }
 
         //We need to show that they're gonna use a new technique
@@ -485,7 +483,7 @@ public class MainActivity extends BaseARActivity
         FluidMechanics.getState(fluidState);
         fluidSettings.precision = MAXPRECISION ;
         fluidSettings.translatePlane = false ;
-        fluidSettings.controlType = RATE_CONTROL;
+        fluidSettings.controlType = -1 ;
         fluidSettings.isTraining = true ;
         //fluidSettings.dataORplane = 0 ; //Data 
 
@@ -1137,7 +1135,7 @@ public class MainActivity extends BaseARActivity
             final TextView sliderTooltipPrecision = (TextView)findViewById(R.id.sliderTooltipPrecision);
             sliderTooltipPrecision.setVisibility(View.INVISIBLE);
 
-            sliderPrecision.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            /*sliderPrecision.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
                 double mProgress = -1;
                 boolean mPressed = false;
 
@@ -1190,7 +1188,7 @@ public class MainActivity extends BaseARActivity
                     updateDataSettings();
                     //Log.d(TAG, "Precision Java = " + mProgress);
                 }
-            });
+            });*/
         
     }
 
@@ -1358,37 +1356,6 @@ public class MainActivity extends BaseARActivity
                 loadDataset(velocities);
                 reset();
                 break ;
-
-
-            case R.id.action_ratecontrol:
-                item.setChecked(!item.isChecked());
-                if(item.isChecked()){
-                    changeControlType(RATE_CONTROL);
-                }
-                break;
-
-            case R.id.action_speedcontrol:
-                item.setChecked(!item.isChecked());
-                if(item.isChecked()){
-                    changeControlType(SPEED_CONTROL);
-                }
-                break;
-
-            case R.id.action_pressurecontrol:
-                item.setChecked(!item.isChecked());
-                if(item.isChecked()){
-                    changeControlType(PRESSURE_CONTROL);
-                }
-                break;
-
-            case R.id.action_slidercontrol:
-                item.setChecked(!item.isChecked());
-                if(item.isChecked()){
-                    changeControlType(SLIDER_CONTROL);
-                }
-                break;
-
-
 
 
         }
@@ -1732,15 +1699,6 @@ public class MainActivity extends BaseARActivity
                 break;
             case PRESSURE_CONTROL_REVERSE:
                 techniqueName = "Reverse Pressure Control";
-                break ;
-            case SPEED_CONTROL:
-                techniqueName = "Speed control";
-                break;
-            case RATE_CONTROL:
-                techniqueName = "Rate Control";
-                break ;
-            case SLIDER_CONTROL:
-                techniqueName = "Slider Control";
                 break ;
         }
         return techniqueName ;

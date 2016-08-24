@@ -32,13 +32,9 @@
 #define velocity	4
 
 
-#define RATE_CONTROL				1
-#define RATE_CONTROL_SIMPLE			11
-#define SPEED_CONTROL				2
-#define PRESSURE_CONTROL			3
-#define PRESSURE_CONTROL_REVERSE 	31
-#define SLIDER_CONTROL				4
-#define NO_CONTROL					0
+
+#define PRESSURE_CONTROL			1
+#define PRESSURE_CONTROL_REVERSE 	2
 
 #define MAXPRECISION		3.0
 #define MINPRECISION		0.5
@@ -70,7 +66,7 @@
 #endif
 
 //#define TIME	1000000
-#define TIME	60000000
+#define TIME	5000000
 #define TIMELOG 	5000
 #define SLEEPTIME 2000000
 

@@ -185,8 +185,6 @@ struct FluidMechanics::Impl
 	int getFingerPos(int fingerID);
 	void onTranslateBar(float pos);
 	float convertIntoNewRange(float oldRangeMin, float oldRangeMax, float value);
-	void computeAngular();
-	void computeEucli();
 	void setPId(int p);
 	bool hasFinishedLog();
 	int getCondition();
@@ -424,27 +422,7 @@ void FluidMechanics::Impl::setPId(int p){
 }
 
 int FluidMechanics::Impl::getCondition(){
-	/*std::string techniqueName ;
-	LOGD("TECHNIQUENAME %d",settings->controlType);
-	LOGD("TECHNIQUENAME Participant %d",participant.getCondition());
-	switch(participant.getCondition()){
-        case PRESSURE_CONTROL:
-            techniqueName = "Pressure Control";
-            break;
-        case PRESSURE_CONTROL_REVERSE:
-            techniqueName = "Reverse Pressure Control";
-            break ;
-        case SPEED_CONTROL:
-            techniqueName = "Speed control";
-            break;
-        case RATE_CONTROL:
-            techniqueName = "Rate Control";
-            break ;
-        case SLIDER_CONTROL:
-            techniqueName = "Slider Control";
-            break ;
-    }
-	return techniqueName;*/
+	
 	return participant.getCondition();
 }
 
@@ -1020,39 +998,9 @@ void FluidMechanics::Impl::setTangoValues(double tx, double ty, double tz, doubl
 		if( interactionMode == dataTangible || interactionMode == dataTouchTangible )
 		{
 
-			//if(settings->controlType == SPEED_CONTROL){
-			if(settings->isTraining == false){
-
-				if(participant.getCondition() == SPEED_CONTROL){
-					computeEucli();
-					trans*=eucli ;
-					currentDataPos +=trans ;
-				}
-				//if(settings->controlType == RATE_CONTROL_SIMPLE){
-				if(participant.getCondition() == RATE_CONTROL_SIMPLE){
-					tabPos+=trans ;
-					Vector3 coordinateCorrection(1,-1,-1);
-					currentDataPos = (centerRot.inverse()*coordinateCorrection * (tabPos-centerPos) * 0.05) + currentDataPos ;
-				}
-				//if(settings->controlType == RATE_CONTROL){
-				if(participant.getCondition() == RATE_CONTROL){
-					tabPos+=trans ;
-					Vector3 diff = tabPos-centerPos ;
-					diff.x = abs(diff.x);
-					diff.y = abs(diff.y);
-					diff.z = abs(diff.z);
-					diff.x = convertIntoNewRange(0, 100, diff.x);
-					diff.y = convertIntoNewRange(0, 100, diff.y);
-					diff.z = convertIntoNewRange(0, 100, diff.z);
-					currentDataPos += trans * diff ;
-				}
-				else{
-				currentDataPos +=trans ;
-				}
-			}
-			else{
-				currentDataPos +=trans ;
-			}
+			
+			currentDataPos +=trans ;
+			
 
 			printAny(currentDataPos, "Data Pos");
 		}
@@ -1085,28 +1033,13 @@ void FluidMechanics::Impl::setGyroValues(double rx, double ry, double rz, double
 			rot = rot * Quaternion(rot.inverse() * Vector3::unitX(), rx);
 
 			
-			//if(settings->controlType == RATE_CONTROL_SIMPLE ){
 
-			if(settings->isTraining == false){
-
-				if(participant.getCondition() == RATE_CONTROL_SIMPLE ){
-					tabRot = rot ;//* tabRot ;
-					currentDataRot = centerRot.inverse() * slerp(Quaternion::identity(),(tabRot*centerRot.inverse()),0.08) * centerRot *currentDataRot ;
-				}
-
-				else{
-					currentDataRot = rot;	
-				}
-			}
-			else{
-				currentDataRot = rot;	
-			}
+			
+			currentDataRot = rot;	
+			
 			
 			printAny(currentDataRot, "Data Rot");
 
-			
-
-			computeAngular();
 
 		}
 
@@ -1115,126 +1048,6 @@ void FluidMechanics::Impl::setGyroValues(double rx, double ry, double rz, double
 	}
 	
 }
-
-
-
-void FluidMechanics::Impl::computeAngular(){
-	//See http://lost-found-wandering.blogspot.fr/2011/09/revisiting-angular-velocity-from-two.html
-
-
-	//if(settings->controlType == SPEED_CONTROL ){
-	if(participant.getCondition() == SPEED_CONTROL ){
-		directionRot = currentDataRot * previousRot.inverse();
-		float tmp = 2 * safe_acos(directionRot.w);
-		
-
-		if(tmp < MINANGULAR)		tmp = MINANGULAR ;
-		if(tmp > MAXANGULAR)		tmp = MAXANGULAR ;
-
-		teta =convertIntoNewRange(MINANGULAR, MAXANGULAR, tmp);
-		LOGD("VALUE = %f  ----   ANGULAR SPEED = %f",tmp, teta);
-
-		//We update the previous positions and orientation
-		//Will only be used if the control mode is Speed
-		previousRot = currentDataRot ;
-	}
-
-	//else if(settings->controlType == RATE_CONTROL ){
-	else if(participant.getCondition() == RATE_CONTROL ){
-		directionRot = currentDataRot * centerRot.inverse();
-		float tmp = 2 * safe_acos(directionRot.w);
-		
-
-		if(tmp < MINANGULARRATE)		tmp = MINANGULARRATE ;
-		if(tmp > MAXANGULARRATE)		tmp = MAXANGULARRATE ;
-
-		teta =convertIntoNewRange(MINANGULARRATE, MAXANGULARRATE, tmp);
-		LOGD("VALUE = %f  ----   ANGULAR SPEED = %f",tmp, teta);
-
-		//We update the previous positions and orientation
-		//Will only be used if the control mode is Speed
-		previousRot = currentDataRot ;
-	}
-
-	//else if(settings->controlType == RATE_CONTROL_SIMPLE){
-	else if(participant.getCondition() == RATE_CONTROL_SIMPLE){
-		directionRot = tabRot * centerRot.inverse();
-		float tmp = 2 * safe_acos(directionRot.w);
-		
-
-		if(tmp < MINANGULAR)		tmp = MINANGULAR ;
-		if(tmp > MAXANGULAR)		tmp = MAXANGULAR ;
-
-		teta =convertIntoNewRange(MINANGULAR, MAXANGULAR, tmp);
-		LOGD("VALUE = %f  ----   ANGULAR SPEED = %f",tmp, teta);
-
-
-		/*
-		directionRot = tabRot * centerRot.inverse();
-		float tmp = 2 * safe_acos(directionRot.w);
-
-		//if(tmp < MINANGULARRATE)		tmp = MINANGULARRATE ;
-		//if(tmp > MAXANGULARRATE)		tmp = MAXANGULARRATE ;
-
-		teta =convertIntoNewRange(MINANGULARRATE, MAXANGULARRATE, tmp);
-		LOGD("VALUE = %f  ----   ANGULAR SPEED = %f",tmp, teta);
-		printAny(centerRot, "centerRot");
-		printAny(tabRot,"tabRot");
-		printAny(directionRot,"directionRot");*/
-	}
-	else{
-
-		teta = 1 ;
-	}
-	 
-}
-
-void FluidMechanics::Impl::computeEucli(){
-
-	//if(settings->controlType == SPEED_CONTROL){
-	if(participant.getCondition() == SPEED_CONTROL){
-		float tmp = euclideandist(currentDataPos, previousPos);
-		if(tmp < MINEUCLIDEAN)	tmp = MINEUCLIDEAN ;	
-		if(tmp > MAXEUCLIDEAN)	tmp = MAXEUCLIDEAN ;
-		//if(eucli < MINEUCLIDEAN)	eucli = MINEUCLIDEAN ;	
-		//if(eucli > MAXEUCLIDEAN)	eucli = MAXEUCLIDEAN ;
-		eucli = convertIntoNewRange(MINEUCLIDEAN, MAXEUCLIDEAN, tmp);
-		LOGD("VALUE = %f  ----	 EUCLI = %f",tmp,eucli);
-
-		//We update the previous positions and orientation
-		//Will only be used if the control mode is Speed
-		previousPos = currentDataPos ;
-	}
-	//else if(settings->controlType == RATE_CONTROL_SIMPLE){
-	else if(participant.getCondition() == RATE_CONTROL_SIMPLE){
-		float tmp = euclideandist(currentDataPos, centerPos);
-		if(tmp < MINEUCLIDEAN)	tmp = MINEUCLIDEAN ;	
-		if(tmp > MAXEUCLIDEAN)	tmp = MAXEUCLIDEAN ;
-		//if(eucli < MINEUCLIDEAN)	eucli = MINEUCLIDEAN ;	
-		//if(eucli > MAXEUCLIDEAN)	eucli = MAXEUCLIDEAN ;
-		eucli = convertIntoNewRange(MINEUCLIDEAN, MAXEUCLIDEAN, tmp);
-
-		LOGD("VALUE = %f  ----	 EUCLI = %f",tmp,eucli);
-
-		
-
-		/*float tmp = euclideandist(tabPos, centerPos);
-		if(tmp < MINEUCLIDEANRATE)	tmp = MINEUCLIDEANRATE ;
-		if(tmp > MAXEUCLIDEANRATE) tmp = MAXEUCLIDEANRATE;
-		eucli = convertIntoNewRange(MINEUCLIDEANRATE, MAXEUCLIDEANRATE, tmp);
-		directionMov = tabPos - centerPos ;
-		directionMov.normalize();
-		directionMov *= eucli ;
-		LOGD("VALUE = %f  ----	 EUCLI = %f",tmp,eucli);*/
-	}
-	else{
-
-		eucli = 1 ;
-	}
-	
-}
-
-
 
 
 //Code adapted from 
