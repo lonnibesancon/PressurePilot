@@ -161,14 +161,14 @@ void Participant::performLog(){
 
 		    	if(logFile!=NULL){
 		    		//The header first
-		    		line = "Timestamp;CurrentConditionID;CurrentTargetID;Precision;DataPosition;DataOrientation;EuclideanDist;AngularDist;TargetPosition;TargetOrientation" ;
+		    		line = "Timestamp;CurrentConditionID;CurrentTargetID;Precision;;EuclideanDist;AngularDist;DataPosition;DataOrientation;TargetPosition;TargetOrientation" ;
 			    	fputs(line.c_str(), logFile);
 			        fflush(logFile);
 			        //The we populate the file with the data
 		    		for(int i = 0 ; i < logPositions.size(); i++){
 		    			line = 	 to_string(timestamps[i])+";"+to_string(conditions[currentConditionID])+";"+to_string(std::get<2>(targets[currentTargetID]))+";"
-		    					+to_string(precision[i])+";"+to_string(std::get<0>(logPositions[i]))+";"+to_string(std::get<1>(logPositions[i]))+";"
-		    					+to_string(std::get<0>(logDiffValues[i]))+";"+to_string(std::get<1>(logDiffValues[i]))
+		    					+to_string(precision[i])+";"+to_string(std::get<0>(logDiffValues[i]))+";"+to_string(std::get<1>(logDiffValues[i]))+";"
+		    					+to_string(std::get<0>(logPositions[i]))+";"+to_string(std::get<1>(logPositions[i]))+";"
 		    					+";"+to_string(std::get<0>(targets[currentTargetID]))+";"+to_string(std::get<1>(targets[currentTargetID]))+"\n" ;
 		    			
 		    			fputs(line.c_str(), logFile);
