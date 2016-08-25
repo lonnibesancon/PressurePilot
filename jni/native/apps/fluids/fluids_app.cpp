@@ -117,6 +117,7 @@ JNIEnv* env ;
 jobject obj ;
 static JavaVM* g_jvm = 0;
 int nbSeconds = 20 ;
+bool trialStarted = false ;
 
 
 // See http://stackoverflow.com/questions/14650885/how-to-create-timer-events-using-c-11
@@ -392,6 +393,9 @@ void FluidMechanics::Impl::timer(){
 }
 
 void FluidMechanics::Impl::endTrial(){
+	//synchronized(trialStarted){
+		trialStarted = true ;
+	//}
 	for(int i = 0 ; i < 20 ; i++){
 		usleep(TIME/20);
 		nbSeconds -- ;
@@ -411,6 +415,9 @@ void FluidMechanics::Impl::endTrial(){
 }
 
 void FluidMechanics::Impl::log(){
+	while(trialStarted == false){
+
+	}
 	while(isOver == false){
 		usleep(TIMELOG);
 		LOGD("Second timer for collecting data");	
