@@ -235,6 +235,7 @@ public class MainActivity extends BaseARActivity
     private float value ;
     private short trialNumber = 0 ;
     private boolean trialFinished = false ;
+    private boolean trialStarted = false ;
     private boolean mAlertVisible = false ;
     private boolean idRegistered = false ;
     final private Context context = this ;
@@ -390,6 +391,7 @@ public class MainActivity extends BaseARActivity
         FluidMechanics.launchTrial();
         trialNumber ++ ; 
         Log.d("TrialNumber",""+trialNumber);
+        trialStarted = true ;
     }
 
     public void endTrial(){
@@ -1645,13 +1647,17 @@ public class MainActivity extends BaseARActivity
    public void requestRender(){
         if (mView != null){
             Log.d(TAG,"RequestRender");
+            if(trialStarted){
+                setStateOverlay();    
+            }
             mView.requestRender();
+            
             //client.setData(FluidMechanics.getData());
             //Log.d(TAG,"Request Render");
             //loggingFunction(); 
             if(FluidMechanics.isTrialOver() && !mAlertVisible && idRegistered ){ 
                 //The last one is here to prevent the dialogs from showing up first
-                
+                trialStarted = false ;
                 mAlertVisible = true;
                 /*while(FluidMechanics.hasFinishedLog() == false ){
                             try{
@@ -1675,7 +1681,6 @@ public class MainActivity extends BaseARActivity
                 
             }
         }
-        setStateOverlay();
             
    } 
 
