@@ -91,6 +91,7 @@ extern "C" {
     JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_setPId(JNIEnv* env, jobject obj, jint p);
     JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_hasFinishedLog(JNIEnv* env, jobject obj);
     JNIEXPORT int JNICALL Java_fr_limsi_ARViewer_FluidMechanics_getCondition(JNIEnv* env, jobject obj);
+    JNIEXPORT int JNICALL Java_fr_limsi_ARViewer_FluidMechanics_getTime(JNIEnv* env, jobject obj);
     //Initialize everything to call a java function
     JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_initJNI(JNIEnv* env, jobject obj);
     JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_endTrialJava();
@@ -115,6 +116,7 @@ jmethodID javaMethodRef;
 JNIEnv* env ;
 jobject obj ;
 static JavaVM* g_jvm = 0;
+int nbSeconds = 20 ;
 
 
 // See http://stackoverflow.com/questions/14650885/how-to-create-timer-events-using-c-11
@@ -390,7 +392,10 @@ void FluidMechanics::Impl::timer(){
 }
 
 void FluidMechanics::Impl::endTrial(){
-	usleep(TIME);
+	for(int i = 0 ; i < 20 ; i++){
+		usleep(TIME/20);
+		nbSeconds -- ;
+	}
 	//LOGD("Trial End");
 	isOver = true ;
 	reset();
@@ -442,6 +447,7 @@ void FluidMechanics::Impl::reset(){
 	centerRot = currentDataRot ;
 	directionMov = Vector3::zero();
 	logNumber = 0 ;
+	nbSeconds = 20 ;
 
 	setMatrices(Matrix4::makeTransform(Vector3(0, 0, 400)),Matrix4::makeTransform(Vector3(0, 0, 400)));
 	
@@ -2072,6 +2078,17 @@ JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_hasFinishedLog(JNIE
 	} catch (const std::exception& e) {
 		throwJavaException(env, e.what());
 	}
+
+}
+
+JNIEXPORT int JNICALL Java_fr_limsi_ARViewer_FluidMechanics_getTime(JNIEnv* env, jobject obj){
+	if (!App::getInstance())
+			throw std::runtime_error("init() was not called");
+
+	if (App::getType() != App::APP_TYPE_FLUID)
+		throw std::runtime_error("Wrong application type");
+
+	return nbSeconds;
 
 }
 

@@ -1675,6 +1675,7 @@ public class MainActivity extends BaseARActivity
                 
             }
         }
+        setStateOverlay();
             
    } 
 
@@ -1919,13 +1920,15 @@ public class MainActivity extends BaseARActivity
     }
 
     private void setStateOverlay(){
-        String connectionText = "Disconnected";
-        if (state == STATE_CONNECTING) {
+
+        String timeText = ""+FluidMechanics.getTime();
+        /*if (state == STATE_CONNECTING) {
             connectionText = "Connecting...";
         } else if (state == STATE_CONNECTED) {
             connectionText = "Connected";
         }
-        bluetoothOverlay.setText(connectionText);
+        */
+        bluetoothOverlay.setText(timeText);
     }
 
 
