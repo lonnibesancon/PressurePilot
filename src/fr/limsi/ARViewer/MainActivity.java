@@ -1862,15 +1862,6 @@ public class MainActivity extends BaseARActivity
 
                     if(value < MINPRESSURE)     value = MINPRESSURE ;
                     if(value > MAXPRESSURE)     value = MAXPRESSURE ;
-                    if(fluidSettings.controlType == PRESSURE_CONTROL){
-                        value = MAXPRESSURE - value ;
-                    }
-
-                    value = Utils.convertIntoNewRange(MINPRECISION,MAXPRECISION,MINPRESSURE,MAXPRESSURE,value);
-
-                    float tmp = Utils.convertIntoNewRange(MINPRECISION,MAXPRECISION,MINPRESSURE,MAXPRESSURE,2);
-
-                    Log.d("TESTPRESS","Tmp value = "+tmp+" value = "+value);
 
                     //Have to use int
                     final int step = 1;
@@ -1878,7 +1869,16 @@ public class MainActivity extends BaseARActivity
                     final int min = (int)(MINPRECISION * 100);
                     final int initialValue = max ;
                     final double initialPosition = (double)max ;
-                    final int valueInt = (int) (value * 100) - min; //Because the slider cannot be set at something else than 0
+                    final int valueInt ;
+                    if(fluidSettings.controlType == PRESSURE_CONTROL_REVERSE){
+                        value = Utils.convertIntoNewRange(MINPRECISION,MAXPRECISION,MINPRESSURE,MAXPRESSURE,value);
+                        valueInt = (int) (value * 100) - min; //Because the slider cannot be set at something else than 0    
+                    }
+                    else{
+                        value = Utils.convertIntoNewRange(MAXPRECISION,MINPRECISION,MINPRESSURE,MAXPRESSURE,value);
+                        //value = MAXPRESSURE - value ;
+                        valueInt = (int) (value * 100) - min;
+                    }
 
                     final VerticalSeekBar sliderPrecision = (VerticalSeekBar)findViewById(R.id.verticalSliderPrecision);
 

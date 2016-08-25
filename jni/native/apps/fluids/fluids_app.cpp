@@ -362,12 +362,12 @@ void FluidMechanics::Impl::launchTrial(){
 	isOver = false ;
 	interactionMode = dataTangible ;
 	reset();
-	participant.clearVectors();
+	//participant.clearVectors();
 	participant.logging(true);	
 	std::thread timerTrial(&FluidMechanics::Impl::endTrial,this);
-	timerTrial.detach();
 	std::thread timerLog(&FluidMechanics::Impl::log,this);
 	timerLog.detach();
+	timerTrial.detach();
 	//main is blocked until funcTest1 is not finished
 	//timerTrial.join();
 }
@@ -391,14 +391,14 @@ void FluidMechanics::Impl::timer(){
 
 void FluidMechanics::Impl::endTrial(){
 	usleep(TIME);
-	LOGD("Trial End");
-	
+	//LOGD("Trial End");
+	isOver = true ;
 	reset();
 	//std::thread pLog(&Participant::resetTrial,participant);
 	//pLog.join();
 	participant.resetTrial();
 	settings->controlType = participant.getCondition();
-	isOver = true ;
+	
 	interactionMode = 0 ; 
 	
 	//Java_fr_limsi_ARViewer_FluidMechanics_endTrialJava();

@@ -56,7 +56,7 @@
 
 
 #ifndef TRAINING
-#define NBTRIALS 15
+#define NBTRIALS 20
 #else
 #define NBTRIALS 18
 #endif
