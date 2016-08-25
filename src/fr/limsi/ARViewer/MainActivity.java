@@ -1883,7 +1883,7 @@ public class MainActivity extends BaseARActivity
                     final VerticalSeekBar sliderPrecision = (VerticalSeekBar)findViewById(R.id.verticalSliderPrecision);
 
                     sliderPrecision.setMax( (max - min) / step );
-                    sliderPrecision.setProgress(valueInt);
+                    sliderPrecision.customSetProgress(valueInt);
                     sliderPrecision.setMax( (max - min) / step );
                     Log.d("Bluetooth ValueSlider","Value = "+value+";;;;;Value Int = "+valueInt+" ;;;; Max - Min = "+(max-min)+" ;;;;;Value  Slider = "+(max-valueInt));
 
