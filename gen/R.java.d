@@ -18,4 +18,10 @@
 /Users/lonnibesancon/Desktop/PressurePilot/res/values/colors.xml \
 /Users/lonnibesancon/Desktop/PressurePilot/res/values/CustomTheme.xml \
 /Users/lonnibesancon/Desktop/PressurePilot/res/values/strings.xml \
+/Users/lonnibesancon/Desktop/PressurePilot/bin/res/drawable/bouton.png \
+/Users/lonnibesancon/Desktop/PressurePilot/bin/res/drawable/boutonactif.png \
+/Users/lonnibesancon/Desktop/PressurePilot/bin/res/drawable/tango.png \
+/Users/lonnibesancon/Desktop/PressurePilot/bin/res/drawable-hdpi/ic_launcher.png \
+/Users/lonnibesancon/Desktop/PressurePilot/bin/res/drawable-ldpi/ic_launcher.png \
+/Users/lonnibesancon/Desktop/PressurePilot/bin/res/drawable-mdpi/ic_launcher.png \
 /Users/lonnibesancon/Desktop/PressurePilot/bin/AndroidManifest.xml \

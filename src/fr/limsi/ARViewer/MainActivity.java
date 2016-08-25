@@ -1874,18 +1874,19 @@ public class MainActivity extends BaseARActivity
 
                     //Have to use int
                     final int step = 1;
-                    final int max = (int)MAXPRECISION * 100;
-                    final int min = (int)MINPRECISION * 100;
+                    final int max = (int)(MAXPRECISION * 100);
+                    final int min = (int)(MINPRECISION * 100);
                     final int initialValue = max ;
                     final double initialPosition = (double)max ;
-                    final int valueInt = (int) (value * 100) ;
+                    final int valueInt = (int) (value * 100) - min; //Because the slider cannot be set at something else than 0
 
                     final VerticalSeekBar sliderPrecision = (VerticalSeekBar)findViewById(R.id.verticalSliderPrecision);
 
                     sliderPrecision.setMax( (max - min) / step );
                     sliderPrecision.customSetProgress(valueInt);
                     sliderPrecision.setMax( (max - min) / step );
-                    Log.d("Bluetooth ValueSlider","Value = "+value+";;;;;Value Int = "+valueInt+" ;;;; Max - Min = "+(max-min)+" ;;;;;Value  Slider = "+(max-valueInt));
+                    //Log.d("Bluetooth ValueSlider","Value = "+value+";;;;;Value Int = "+valueInt+" ;;;; Max - Min = "+(max-min)+" ;;;;;Value  Slider = "+(max-valueInt));
+                    Log.d("ValueSlider","Value = "+value+";;;;;Value Int = "+valueInt+" Min = "+min );
 
                     final TextView sliderTooltipPrecision = (TextView)findViewById(R.id.sliderTooltipPrecision);
                     sliderTooltipPrecision.setVisibility(View.INVISIBLE);
