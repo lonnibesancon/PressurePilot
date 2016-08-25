@@ -140,36 +140,37 @@ void Participant::performLog(){
 
 	    	//Finally we check for the condition folder
 	    	finalPath += cond + "/";
-	    	LOGD("LOGWRITING path = %s",finalPath.c_str());
+	    	//LOGD("LOGWRITING path = %s",finalPath.c_str());
 	    	res = stat(finalPath.c_str(), &sb);
 		    if (0 == res && sb.st_mode & S_IFDIR)
 		    {
-		        LOGD("LOGWRITING 'Condition' dir already in app's internal data storage.");
+		        //LOGD("LOGWRITING 'Condition' dir already in app's internal data storage.");
 		    }
 		    else if (ENOENT == errno)
 		    {
 		        res = mkdir(finalPath.c_str(), 0770);
-		        LOGD("LOGWRITING no directory condition");
+		        //LOGD("LOGWRITING no directory condition");
 		    }
 
 		    if (0 == res){
 		    	finalPath += to_string(currentTargetID)+".csv" ;
-				LOGD("LOGWRITING File log is %s \n", finalPath.c_str());
+				//LOGD("LOGWRITING File log is %s \n", finalPath.c_str());
 				
 		    	FILE* logFile = std::fopen(finalPath.c_str(), "w+");
 		    	std::string line ;
 
 		    	if(logFile!=NULL){
 		    		//The header first
-		    		line = "Timestamp;CurrentConditionID;CurrentTargetID;Precision;;EuclideanDist;AngularDist;DataPosition;DataOrientation;TargetPosition;TargetOrientation" ;
+		    		line = "Timestamp;Precision;EuclideanDist;AngularDist;DataPosition;DataOrientation;CurrentTarget = "+to_string(std::get<2>(targets[currentTargetID]))+";IDTargetPosition="
+		    				+to_string(std::get<0>(targets[currentTargetID]))+";TargetOrientation = "+to_string(std::get<1>(targets[currentTargetID]))+"\n" ;
 			    	fputs(line.c_str(), logFile);
 			        fflush(logFile);
+			        
 			        //The we populate the file with the data
 		    		for(int i = 0 ; i < logPositions.size(); i++){
-		    			line = 	 to_string(timestamps[i])+";"+to_string(conditions[currentConditionID])+";"+to_string(std::get<2>(targets[currentTargetID]))+";"
-		    					+to_string(precision[i])+";"+to_string(std::get<0>(logDiffValues[i]))+";"+to_string(std::get<1>(logDiffValues[i]))+";"
-		    					+to_string(std::get<0>(logPositions[i]))+";"+to_string(std::get<1>(logPositions[i]))+";"
-		    					+";"+to_string(std::get<0>(targets[currentTargetID]))+";"+to_string(std::get<1>(targets[currentTargetID]))+"\n" ;
+		    			line = 	 to_string(timestamps[i])+";"+to_string(precision[i])+";"+to_string(std::get<0>(logDiffValues[i]))+";"
+		    					+to_string(std::get<1>(logDiffValues[i]))+";"+to_string(std::get<0>(logPositions[i]))+";"
+		    					+to_string(std::get<1>(logPositions[i]))+";\n" ;
 		    			
 		    			fputs(line.c_str(), logFile);
 			        	fflush(logFile);
@@ -248,9 +249,10 @@ void Participant::addData(Vector3 currentPos, Quaternion currentRot, float prec,
 		
 		float eucli = euclideandist(currentPos,std::get<0>(targets[currentConditionID]));
 		Quaternion directionRot = currentRot * std::get<1>(targets[currentConditionID]).inverse();
-		float angular = 2 * safe_acos(directionRot.w);
+		float angular = 2 * safe_acos(directionRot.w) * 180/3.14159;
 
 		logDiffValues.push_back(std::tuple<float,float>(eucli,angular));
+		LOGD("Current ID = %s",to_string(std::get<2>(targets[currentTargetID])).c_str());
 	}
 	
 }
@@ -276,8 +278,25 @@ void Participant::generateAllTargets(){
 	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(11.206, 8.74678, 76.2941)		,Quaternion(0.751457, 0.222842, 0.268716, -0.5598)		,13));
 	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(33.7071, 3.05983, 101.892)		,Quaternion(0.692698, -0.176285, -0.0476433, -0.697677)	,14));
 	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(-3.92666, -12.46, 98.5911)		,Quaternion(-0.236857, -0.725444, 0.576961, -0.29098)	,15));
-	//targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(-4.42321, 13.177, 93.1823)		,Quaternion(-0.637159, -0.714029, 0.249659, -0.147583)		,16));
-	//targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(31.721, -8.42904, 124.926)		,Quaternion(-0.920161, -0.359409, -0.148246, -0.0454646)	,17));
-	//targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(30.2151, 21.5581, 102.932)		,Quaternion(-0.933026, -0.275187, -0.226801, -0.0470352)	,18));
+
+	/*targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(23.3558, 12.8098, 103.004)		,Quaternion(0.861274, -0.329476, 0.374063, -0.098608)	,16));
+	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(-28.9968, 9.52802, 107.025)	,Quaternion(-0.151095, -0.809254, 0.559452, -0.0962959)	,17));
+	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(35.6581, -4.86333, 104.931)	,Quaternion(-0.399117, -0.69609, 0.554884, -0.21964)	,18));
+	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(-54.7899, -12.5345, 154.183)	,Quaternion(-0.242372, -0.897385, 0.368674, 0.00247486)	,19));
+	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(34.4052, 20.5995, 110.312)		,Quaternion(0.17284, -0.027112, 0.982298, -0.0668766)	,20));
+	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(34.4052, 20.5995, 110.312)		,Quaternion(0.17284, -0.027112, 0.982298, -0.0668766)	,21));
+	targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(34.4052, 20.5995, 110.312)		,Quaternion(0.17284, -0.027112, 0.982298, -0.0668766)	,22));*/
+	//targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(-4.42321, 13.177, 93.1823)		,Quaternion(-0.637159, -0.714029, 0.249659, -0.147583)		,23));
+	//targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(31.721, -8.42904, 124.926)		,Quaternion(-0.920161, -0.359409, -0.148246, -0.0454646)	,24));
+	//targets.push_back(std::tuple<Vector3,Quaternion,int>(Vector3(30.2151, 21.5581, 102.932)		,Quaternion(-0.933026, -0.275187, -0.226801, -0.0470352)	,25));
+
+
+
+
+
+
+
+
+
 
 }

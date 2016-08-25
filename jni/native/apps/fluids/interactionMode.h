@@ -52,10 +52,6 @@
 
 #define thresholdRST  300.0 
 
-//#define TRAINING
-#define TIMETRAINING 25000000
-
-
 
 
 
@@ -65,8 +61,8 @@
 #define NBTRIALS 18
 #endif
 
-//#define TIME	1000000
-#define TIME	5000000
+//#define TIME	 1000000
+#define TIME	 5000000
 #define TIMELOG 	5000
 #define SLEEPTIME 2000000
 

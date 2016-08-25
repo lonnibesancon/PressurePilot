@@ -1232,6 +1232,8 @@ void FluidMechanics::Impl::updateMatrices(){
 	
 
 	statem = Matrix4::makeTransform(currentDataPos, currentDataRot);
+	//printAny(currentDataRot,"Current Rotation");
+	//printAny(currentDataPos,"Current Position");
 
 	//Plane not moving on the tablet
 	/*synchronized(state->modelMatrix) {

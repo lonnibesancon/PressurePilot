@@ -544,7 +544,7 @@ struct Vector3
 
 	friend std::ostream& operator<<(std::ostream& os, const Vector3& v)
 	{
-		os << "Vector3(" << v.x << ", " << v.y << ", " << v.z << ")";
+		os << "V3(" << v.x << " | " << v.y << " | " << v.z << ")";
 		return os;
 	}
 
@@ -1288,7 +1288,7 @@ struct Quaternion
 
 	friend std::ostream& operator<<(std::ostream& os, const Quaternion& q)
 	{
-		os << "Quaternion(" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << ")";
+		os << "Q(" << q.x << " | " << q.y << " | " << q.z << " | " << q.w << ")";
 		return os;
 	}
 
@@ -1371,8 +1371,8 @@ inline T safe_acos(T number){
 	if(number > 1.0){
 		number = 1.0 ;
 	}
-	if(number < 0.0){
-		number = 0.0 ;
+	if(number < -1.0){
+		number = -1.0 ;
 	}
 
 	return (acos(number));
