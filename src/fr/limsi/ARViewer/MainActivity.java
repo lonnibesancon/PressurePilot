@@ -237,6 +237,7 @@ public class MainActivity extends BaseARActivity
     private boolean trialFinished = false ;
     private boolean trialStarted = false ;
     private boolean mAlertVisible = false ;
+    private boolean isPopUp = false ;
     private boolean idRegistered = false ;
     final private Context context = this ;
     private Handler mHandler ;
@@ -287,7 +288,10 @@ public class MainActivity extends BaseARActivity
                     FluidMechanics.setPId(p);
                     openFile();
                     idRegistered = true ;
-                    showAlerts();
+                    /*if(isPopUp == false && mAlertVisible == false){
+                        showAlerts();
+                    }*/
+                    
                 }
             }
             
@@ -329,7 +333,8 @@ public class MainActivity extends BaseARActivity
 
     public void showAlerts(){
         //When it's done
-
+        isPopUp = true ;
+        Log.d("TrialLaunched","TrialLaunched");
         if( trialNumber == 2*NBTRIALS ){
             AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
             alert.setTitle("Thanks for your participation");
@@ -390,7 +395,6 @@ public class MainActivity extends BaseARActivity
     }
 
     public void launchTrial(){
-       
         FluidMechanics.launchTrial();
         trialNumber ++ ; 
         Log.d("TrialNumber",""+trialNumber);
@@ -399,7 +403,8 @@ public class MainActivity extends BaseARActivity
 
     public void endTrial(){
         if(trialFinished == false){
-            Log.d("TEST","End Trial");
+            //Log.d("TEST","End Trial");
+            Log.d("TrialLaunched","Enddddd");
             trialFinished = true ;
             mHandler.post(new Runnable(){
                 public void run(){
@@ -453,6 +458,7 @@ public class MainActivity extends BaseARActivity
         public void onClick(DialogInterface dialog, int whichButton) {
         launchTrial();
             mAlertVisible = false ; // So that we'll display the next alert when the trial is Over
+            isPopUp = false ;
             return ;   
           
           }
@@ -1663,32 +1669,7 @@ public class MainActivity extends BaseARActivity
 
 
    public void requestRender(){
-        if (mView != null){
-            if(FluidMechanics.isTrialOver() && !mAlertVisible && idRegistered ){ 
-                //The last one is here to prevent the dialogs from showing up first
-                trialStarted = false ;
-                mAlertVisible = true;
-                mHandler.post(new Runnable() {
-                    public void run(){
-                        
-                        Log.d("Runnable","Show Alert");
-                        showAlerts();
-                        Log.d("Runnable","End Show Alert");
-                    }
-                });
-                
-            }
-            else if(FluidMechanics.isTrialOver == false){
-                if(trialStarted){
-                    setStateOverlay();    
-                }
-                mView.requestRender();
-            }
-           
-
-            
-        }
-        /*if (mView != null){
+        if (mView != null ){
             Log.d(TAG,"RequestRender");
             if(trialStarted){
                 setStateOverlay();    
@@ -1700,8 +1681,8 @@ public class MainActivity extends BaseARActivity
             //loggingFunction(); 
             if(FluidMechanics.isTrialOver() && !mAlertVisible && idRegistered ){ 
                 //The last one is here to prevent the dialogs from showing up first
-                trialStarted = false ;
                 mAlertVisible = true;
+                trialStarted = false ;
                 mHandler.post(new Runnable() {
                     public void run(){
                         
@@ -1712,7 +1693,7 @@ public class MainActivity extends BaseARActivity
                 });
                 
             }
-        }*/
+        }
             
    } 
 
@@ -1884,6 +1865,10 @@ public class MainActivity extends BaseARActivity
 
     private void getData(byte[] data) {
 
+        if(isPopUp || mAlertVisible){
+            Log.d("TrialLaunched","PopUPVISIBLE");
+            return ; //To avoid the bug of the technique not changing
+        }
         Log.d("Bluetooth","test");
 
         Log.d("Bluetooth", "Control Type = "+fluidSettings.controlType);
