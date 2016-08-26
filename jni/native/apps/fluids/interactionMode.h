@@ -62,7 +62,7 @@
 #endif
 
 //#define TIME	 1000000
-#define TIME	 20000000
+#define TIME	 30000000
 #define TIMELOG 	50000
 #define SLEEPTIME 2000000
 

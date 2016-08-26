@@ -119,7 +119,7 @@ jmethodID javaMethodRef;
 JNIEnv* env ;
 jobject obj ;
 static JavaVM* g_jvm = 0;
-int nbSeconds = 20 ;
+int nbSeconds = TIME/1000000 ;
 bool trialStarted = false ;
 
 
@@ -404,8 +404,8 @@ void FluidMechanics::Impl::timer(){
 }
 
 void FluidMechanics::Impl::endTrial(){
-
-	for(int i = 0 ; i < 400 ; i++){
+	int nbSteps = TIME/TIMELOG ;
+	for(int i = 0 ; i < nbSteps ; i++){
 		std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::milliseconds(50));
 		participant.addData(currentDataPos, currentDataRot, settings->precision, logNumber);
 		logNumber++ ;
@@ -483,7 +483,7 @@ void FluidMechanics::Impl::reset(){
 	centerRot = currentDataRot ;
 	directionMov = Vector3::zero();
 	logNumber = 0 ;
-	nbSeconds = 20 ;
+	nbSeconds = TIME/1000000 ;
 
 	setMatrices(Matrix4::makeTransform(Vector3(0, 0, 400)),Matrix4::makeTransform(Vector3(0, 0, 400)));
 	

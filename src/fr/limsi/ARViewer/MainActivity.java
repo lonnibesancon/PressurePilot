@@ -1664,6 +1664,31 @@ public class MainActivity extends BaseARActivity
 
    public void requestRender(){
         if (mView != null){
+            if(FluidMechanics.isTrialOver() && !mAlertVisible && idRegistered ){ 
+                //The last one is here to prevent the dialogs from showing up first
+                trialStarted = false ;
+                mAlertVisible = true;
+                mHandler.post(new Runnable() {
+                    public void run(){
+                        
+                        Log.d("Runnable","Show Alert");
+                        showAlerts();
+                        Log.d("Runnable","End Show Alert");
+                    }
+                });
+                
+            }
+            else if(FluidMechanics.isTrialOver == false){
+                if(trialStarted){
+                    setStateOverlay();    
+                }
+                mView.requestRender();
+            }
+           
+
+            
+        }
+        /*if (mView != null){
             Log.d(TAG,"RequestRender");
             if(trialStarted){
                 setStateOverlay();    
@@ -1677,17 +1702,6 @@ public class MainActivity extends BaseARActivity
                 //The last one is here to prevent the dialogs from showing up first
                 trialStarted = false ;
                 mAlertVisible = true;
-                /*while(FluidMechanics.hasFinishedLog() == false ){
-                            try{
-                                Thread.sleep(100); 
-                                Log.d("LOG","Waiting");
-                            }
-                            catch(InterruptedException e){
-                                Log.d("Error on sleep","Error while puttin the UI thread to sleep waiting for the logging");
-                            }
-                            //alert.show()
-
-                }*/
                 mHandler.post(new Runnable() {
                     public void run(){
                         
@@ -1698,7 +1712,7 @@ public class MainActivity extends BaseARActivity
                 });
                 
             }
-        }
+        }*/
             
    } 
 
