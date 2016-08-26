@@ -52,6 +52,8 @@
 #include <future>
 #include <cstdio>
 
+#define EGO
+
 
 
 #include <vtkXMLPolyDataReader.h>
@@ -95,6 +97,7 @@ extern "C" {
     //Initialize everything to call a java function
     JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_initJNI(JNIEnv* env, jobject obj);
     JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_endTrialJava();
+    JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_isEgo(JNIEnv* env, jobject obj, jboolean ego);
 
 }
 
@@ -303,6 +306,10 @@ struct FluidMechanics::Impl
 	bool buttonIsPressed;
 
 
+	bool ego = false ;
+	void isEgo(bool ego);
+
+
 	//Trial Handling
 	void launchTrial();
 	bool isTrialOver();
@@ -383,6 +390,10 @@ bool FluidMechanics::Impl::isTrialOver(){
 	return isOver;
 }
 
+
+void FluidMechanics::Impl::isEgo(bool b){
+	ego = b ;
+}
 bool FluidMechanics::Impl::hasFinishedLog(){
 	printAny(participant.hasFinishedLog(), "TrialOver Log done");
 	return participant.hasFinishedLog() ;
@@ -1020,6 +1031,12 @@ void FluidMechanics::Impl::setTangoValues(double tx, double ty, double tz, doubl
 		//Normal interaction
 		Vector3 trans = quat.inverse() * (vec-prevVec);
 		trans *= Vector3(1,-1,-1);	//Tango... -_-"
+//#ifdef EGO
+		if(ego){
+			trans *= -1 ;	
+		}
+		
+//#endif
 		trans *= 300 ;
 		//trans.z *= -1 ;
 		trans *= settings->precision ;
@@ -1054,6 +1071,15 @@ void FluidMechanics::Impl::setGyroValues(double rx, double ry, double rz, double
 	rz *=settings->precision * (teta) ;
 	ry *=settings->precision * (teta) ;
 	rx *=settings->precision * (teta) ;
+
+//	#ifdef EGO
+	if(ego){
+		rz *= -1 ;
+		ry *= -1 ;
+		rx *= -1 ;
+	}
+//	#endif
+
 	if(tangoEnabled){
 		if(interactionMode == dataTangible || interactionMode == dataTouchTangible)
 		{
@@ -2117,6 +2143,25 @@ JNIEXPORT int JNICALL Java_fr_limsi_ARViewer_FluidMechanics_getTime(JNIEnv* env,
 
 }
 
+JNIEXPORT void JNICALL Java_fr_limsi_ARViewer_FluidMechanics_isEgo(JNIEnv* env, jobject obj, jboolean ego){
+	try {
+		// LOGD("(JNI) [FluidMechanics] loadVelocityDataSet()");
+
+		if (!App::getInstance())
+			throw std::runtime_error("init() was not called");
+
+		if (App::getType() != App::APP_TYPE_FLUID)
+			throw std::runtime_error("Wrong application type");
+
+		FluidMechanics* instance = dynamic_cast<FluidMechanics*>(App::getInstance());
+		android_assert(instance);
+		instance->isEgo(ego);
+
+	} catch (const std::exception& e) {
+		throwJavaException(env, e.what());
+	}
+}
+
 
 
 FluidMechanics::FluidMechanics(const InitParams& params)
@@ -2225,6 +2270,10 @@ bool FluidMechanics::hasFinishedLog(){
 
 int FluidMechanics::getCondition(){
 	return impl->getCondition();
+}
+
+void FluidMechanics::isEgo(bool b){
+	impl->isEgo(b);
 }
 /*
 void FluidMechanics::initJNI(){

@@ -241,6 +241,9 @@ public class MainActivity extends BaseARActivity
     final private Context context = this ;
     private Handler mHandler ;
 
+    private boolean isEgo = false ;
+    private Button egoBtn ;
+
 
     
     final private static short PRESSURE_CONTROL         = 1 ;
@@ -609,6 +612,21 @@ public class MainActivity extends BaseARActivity
             public void onClick(View view){
                 Log.d("End Training","End Training clicked");
                 alertBeforeEndOfTraining();
+            } 
+        });
+
+        egoBtn = (Button) findViewById(R.id.egoBtn);
+        this.egoBtn.setOnClickListener(new OnClickListener(){
+            @Override
+            public void onClick(View view){
+                isEgo=!isEgo;
+                if(isEgo){
+                    egoBtn.setText("Ego");
+                }
+                else{
+                    egoBtn.setText("Allo");
+                }
+                FluidMechanics.isEgo(isEgo);
             } 
         });
 
