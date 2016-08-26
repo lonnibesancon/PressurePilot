@@ -368,8 +368,8 @@ void FluidMechanics::Impl::launchTrial(){
 	//participant.clearVectors();
 	participant.logging(true);	
 	std::thread timerTrial(&FluidMechanics::Impl::endTrial,this);
-	std::thread timerLog(&FluidMechanics::Impl::log,this);
-	timerLog.detach();
+	//std::thread timerLog(&FluidMechanics::Impl::log,this);
+	//timerLog.detach();
 	timerTrial.detach();
 	//main is blocked until funcTest1 is not finished
 	//timerTrial.join();
@@ -393,11 +393,28 @@ void FluidMechanics::Impl::timer(){
 }
 
 void FluidMechanics::Impl::endTrial(){
+
+	for(int i = 0 ; i < 400 ; i++){
+		std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::milliseconds(50));
+		participant.addData(currentDataPos, currentDataRot, settings->precision, logNumber);
+		logNumber++ ;
+		if(i % 20 == 0){
+			nbSeconds -- ;	
+		}
+
+	}
+	participant.addData(currentDataPos, currentDataRot, settings->precision, logNumber);
+	isOver = true ;
+	reset();
+	participant.resetTrial();
+	settings->controlType = participant.getCondition();
+	interactionMode = 0 ; 
+	/*
 	//synchronized(trialStarted){
 		trialStarted = true ;
 	//}
 	for(int i = 0 ; i < 20 ; i++){
-		usleep(TIME/20);
+		std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::seconds(1));//(TIME/20);
 		nbSeconds -- ;
 	}
 	//LOGD("Trial End");
@@ -410,7 +427,7 @@ void FluidMechanics::Impl::endTrial(){
 	
 	interactionMode = 0 ; 
 	
-	//Java_fr_limsi_ARViewer_FluidMechanics_endTrialJava();
+	//Java_fr_limsi_ARViewer_FluidMechanics_endTrialJava();*/
 	return ;
 }
 
@@ -419,7 +436,8 @@ void FluidMechanics::Impl::log(){
 
 	}
 	while(isOver == false){
-		usleep(TIMELOG);
+		//usleep(TIMELOG);
+		std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::milliseconds(50));
 		LOGD("Second timer for collecting data");	
 		participant.addData(currentDataPos, currentDataRot, settings->precision, logNumber);
 		printAny(settings->precision, "TESTPRESS");
