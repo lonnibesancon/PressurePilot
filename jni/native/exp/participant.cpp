@@ -249,13 +249,25 @@ void Participant::addData(Vector3 currentPos, Quaternion currentRot, float prec,
 		precision.push_back(prec);
 		timestamps.push_back(timestamp*TIMELOG);
 		
-		float eucli = euclideandist(currentPos,std::get<0>(targets[currentConditionID]));
-		Quaternion directionRot = currentRot * std::get<1>(targets[currentConditionID]).inverse();
+		float eucli = euclideandist(currentPos,std::get<0>(targets[currentTargetID]));
+		Quaternion directionRot = currentRot * std::get<1>(targets[currentTargetID]).inverse();
+		//Quaternion directionRot = std::get<1>(targets[currentTargetID]) * currentRot.inverse() ;
+
+		//Because angular is sometimes too big (if > 180) we need to do the following
+		//http://www.blitzbasic.com/Community/posts.php?topic=82629
+		if(directionRot.w < 0.0){
+			directionRot.w *= -1.0 ;
+		}
 		float angular = 2 * safe_acos(directionRot.w) * 180/3.14159;
 
+		
+
+
 		logDiffValues.push_back(std::tuple<float,float>(eucli,angular));
-		LOGD("Current ID = %s",to_string(std::get<2>(targets[currentTargetID])).c_str());
-		LOGD("Current Time = %d",timestamp*TIMELOG);
+		//LOGD("Current ID = %s",to_string(std::get<2>(targets[currentTargetID])).c_str());
+		//LOGD("Current Time = %d",timestamp*TIMELOG);
+		LOGD("Current Angle = %f", angular);
+		LOGD("Current Dist = %f", eucli);
 	}
 	
 }
